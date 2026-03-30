@@ -6,7 +6,7 @@
   <title>Enyinnaya Daberechi | Data Analyst → Data Engineer</title>
   <style>
     /* ── Reset & Base ── */
-    *, *::before, *::after { box-sizing: border-box; marhgin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --bg:       #080d1a;
       --bg2:      #0d1427;
@@ -904,6 +904,62 @@
       </div>
     </div>
 
+
+    <!-- Project 5 - DE -->
+    <div class="project-card fade-in">
+      <div class="project-type de"><span class="type-dot de"></span>Data Engineering</div>
+      <h3 class="project-title" style="cursor:pointer" onclick="openModal('modal-5')">Amazon India Product ETL Pipeline — 5-Stage Data Engineering with Python &amp; SQLite</h3>
+      <p class="project-desc">
+        Built a 5-stage production-style ETL pipeline against a 1,500+ row Amazon India product
+        dataset, resolving 8 critical data quality issues including corrupted ₹ currency encoding,
+        Indian number formatting (1,79,691 → integer), and pipe-delimited multi-category fields.
+        Loaded clean data into 5 relational SQLite tables with full post-load validation —
+        producing 1,351 unique products with confirmed KPIs: avg price ₹3,305, avg discount 46.7%,
+        avg rating 4.09, and a -0.162 discount-to-rating correlation.
+      </p>
+      <div class="project-stack">
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">Pandas</span>
+        <span class="stack-tag">SQLite</span>
+        <span class="stack-tag">NumPy</span>
+        <span class="stack-tag">ETL Pipeline</span>
+        <span class="stack-tag">Data Cleaning</span>
+      </div>
+      <div class="project-links">
+        <span class="placeholder-badge">✅ Live Project</span>
+        <button class="view-btn" onclick="openModal('modal-5')">View Case Study →</button>
+      </div>
+    </div>
+
+    <!-- Project 6 - DA -->
+    <div class="project-card fade-in">
+      <div class="project-type"><span class="type-dot"></span>Data Analysis</div>
+      <h3 class="project-title" style="cursor:pointer" onclick="openModal('modal-6')">Amazon India Analytics Dashboard — Dark-Theme Excel Dashboard from Raw Data</h3>
+      <p class="project-desc">
+        End-to-end data analysis of 1,351 Amazon India products — from dirty, multi-encoding-corrupted
+        raw data to a fully styled dark-theme Excel dashboard with 5 KPI cards, 4 interactive charts,
+        and 5 analytical sheets. Surfaced category dominance, a 46.7% average discount across all
+        products, and the key insight that discounting strategy has no positive effect on customer
+        ratings — built entirely with Python (openpyxl + lxml) for programmatic Excel generation.
+      </p>
+      <div class="project-stack">
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">openpyxl</span>
+        <span class="stack-tag">Excel</span>
+        <span class="stack-tag">Dashboard Design</span>
+        <span class="stack-tag">KPI Analysis</span>
+        <span class="stack-tag">Data Cleaning</span>
+      </div>
+      <div class="project-links">
+        <span class="placeholder-badge">✅ Live Project</span>
+        <button class="view-btn" onclick="openModal('modal-6')">View Case Study →</button>
+        <a class="view-btn" href="Amazon_Dashboard_v4.xlsx" target="_blank" title="Open Excel Dashboard">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          View Dashboard
+        </a>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -987,7 +1043,7 @@
           <div class="contact-icon">🐙</div>
           <div>
             <div class="contact-label">GitHub</div>
-            <a class="contact-value" href="https://github.com" target="_blank">Add your GitHub URL</a>
+            <a class="contact-value" href="https://github.com/Dabspluggins" target="_blank">github.com/Dabspluggins</a>
           </div>
         </div>
         <div class="contact-item">
@@ -1196,6 +1252,100 @@
     <div class="cs-section de">
       <h4>Outcome</h4>
       <p>Delivered a fully documented, tested, and layered data model that separates raw source logic from business logic — serving two consumption-ready mart tables that any BI tool can connect to directly without repeating transformation logic.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 5: Amazon ETL Pipeline -->
+<div class="cs-modal-overlay" id="modal-5">
+  <div class="cs-modal">
+    <button class="cs-modal-close" onclick="closeModal('modal-5')">×</button>
+    <div class="cs-type-badge de">Data Engineering</div>
+    <h2>Amazon India Product ETL Pipeline — 5-Stage Data Engineering with Python &amp; SQLite</h2>
+    <div class="cs-tools">Tools: Python · Pandas · NumPy · SQLite · openpyxl · re (regex)</div>
+    <hr class="cs-divider">
+    <div class="cs-section de">
+      <h4>Overview</h4>
+      <p>Designed and executed a 5-stage ETL pipeline against a 1,500+ row Amazon India product dataset scraped from the live platform. The raw data arrived with multiple encoding corruption issues, non-standard number formats, and multi-valued fields — requiring systematic engineering before any analysis was possible.</p>
+    </div>
+    <div class="cs-section de">
+      <h4>The Problem — 8 Data Quality Issues</h4>
+      <ul>
+        <li><strong>₹ currency encoding corruption:</strong> The rupee symbol was encoded as "â‚¹" (UTF-8/Windows-1252 mismatch) — stripped with regex <code>re.sub(r'^[^\d]+', '', str(v))</code></li>
+        <li><strong>Indian number formatting:</strong> Rating counts like "1,79,691" couldn't parse as integers — resolved by stripping all commas before casting</li>
+        <li><strong>Pipe-delimited multi-category fields:</strong> Category stored as "Electronics|Cables" — split and stored as main_category and sub_category</li>
+        <li><strong>Discount percentage as decimal:</strong> 0.65 stored instead of 65% — multiplied ×100 and rounded to 1dp</li>
+        <li><strong>Missing rating counts:</strong> NaN values imputed with the column median before integer casting</li>
+        <li><strong>Duplicate product IDs:</strong> Multiple rows per product — deduplicated keeping highest review count</li>
+        <li><strong>Mixed rating data types:</strong> String "ratings" coerced to float with error handling</li>
+        <li><strong>Missing savings column:</strong> Derived as actual_price − discounted_price</li>
+      </ul>
+    </div>
+    <div class="cs-section de">
+      <h4>Pipeline Architecture — 5 Stages</h4>
+      <ul>
+        <li><strong>Stage 1 — Extract:</strong> Load raw Excel file, capture row count, identify all quality issues</li>
+        <li><strong>Stage 2 — Transform:</strong> Apply all 8 cleaning steps; derive new columns (savings, main_category, sub_category, discount_band)</li>
+        <li><strong>Stage 3 — Build Tables:</strong> Aggregate to category summary, top-50 products, and discount-band performance tables</li>
+        <li><strong>Stage 4 — Load:</strong> Write 5 relational tables to SQLite using pandas <code>to_sql()</code></li>
+        <li><strong>Stage 5 — Validate:</strong> Post-load assertions confirm row counts, KPI totals, and referential integrity</li>
+      </ul>
+    </div>
+    <div class="cs-section de">
+      <h4>Validated Output KPIs</h4>
+      <ul>
+        <li>1,351 unique products across 9 main categories loaded successfully</li>
+        <li>Average discounted price: ₹3,305 | Average actual price: ₹6,000+</li>
+        <li>Average discount: 46.7% | Average rating: 4.09 / 5.0</li>
+        <li>Total reviews across all products: 23.8 million</li>
+        <li>Pearson correlation (discount % vs rating): −0.162 — heavier discounts do NOT produce better ratings</li>
+      </ul>
+    </div>
+    <div class="cs-section de">
+      <h4>Outcome</h4>
+      <p>Transformed a corrupted, unstructured Excel product dump into a clean, validated, queryable SQLite database — ready to serve dashboards, BI tools, or further modelling. Demonstrates the core data engineering skill: making data trustworthy before it ever reaches analysis.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 6: Amazon DA Dashboard -->
+<div class="cs-modal-overlay" id="modal-6">
+  <div class="cs-modal">
+    <button class="cs-modal-close" onclick="closeModal('modal-6')">×</button>
+    <div class="cs-type-badge">Data Analysis</div>
+    <h2>Amazon India Analytics Dashboard — Dark-Theme Excel Dashboard Built with Python</h2>
+    <div class="cs-tools">Tools: Python · openpyxl · lxml · Pandas · NumPy · Excel</div>
+    <hr class="cs-divider">
+    <div class="cs-section">
+      <h4>Overview</h4>
+      <p>End-to-end data analysis of 1,351 Amazon India products — from dirty, multi-encoding-corrupted raw data to a fully styled dark-theme Excel dashboard. The entire dashboard was programmatically generated with Python (openpyxl + lxml) rather than built by hand in Excel, enabling reproducibility and data refresh at zero manual effort.</p>
+    </div>
+    <div class="cs-section">
+      <h4>The Challenge</h4>
+      <p>Beyond the ETL cleaning (see Amazon ETL Pipeline), the analytical challenge was to make the data tell a story. With 9 categories, 23.8M reviews, and a counterintuitive discount/rating relationship, the dashboard needed to surface the "so what" — not just display numbers.</p>
+    </div>
+    <div class="cs-section">
+      <h4>Dashboard Architecture</h4>
+      <ul>
+        <li><strong>5 KPI Cards:</strong> Unique Products (1,351) · Total Reviews (23.8M) · Avg Rating (4.09) · Avg Discount (46.7%) · Avg Price (₹3,305) — each with a unique accent colour and bevel 3D border</li>
+        <li><strong>4 Charts:</strong> Products by Category (horizontal bar, cyan) · Avg Rating by Category (horizontal bar, green) · Discount Band vs Avg Rating (column, coral) · Review Volume by Category (column, purple)</li>
+        <li><strong>5 Data Sheets:</strong> Amazon Dashboard · Cleaned Data · Category Summary · Top 50 Products · Discount vs Rating</li>
+        <li><strong>Dark chart backgrounds:</strong> openpyxl has no native chart fill API — solved by post-processing chart XML files inside the XLSX archive using zipfile + lxml to inject solidFill elements directly</li>
+        <li><strong>3D bevel borders:</strong> Thick accent-coloured top/left borders (light source) and near-black bottom/right borders (shadow) simulate raised tile depth across all KPI cards and chart panels</li>
+      </ul>
+    </div>
+    <div class="cs-section">
+      <h4>Key Insights Surfaced</h4>
+      <ul>
+        <li>Electronics &amp; Computers dominate by review volume — category trust is highest here</li>
+        <li>Products with 81–100% discount bands have LOWER average ratings than 41–60% bands</li>
+        <li>Discount-to-rating correlation = −0.162: statistical evidence that discounting does not buy satisfaction</li>
+        <li>Average discount of 46.7% suggests aggressive pricing is the norm, not the exception, on the platform</li>
+      </ul>
+    </div>
+    <div class="cs-section">
+      <h4>Outcome</h4>
+      <p>Delivered a publication-quality, fully dark-themed Excel dashboard generated 100% programmatically — proving that Python is a viable replacement for manual Excel dashboard design, and surfaces an actionable insight for any brand selling on Amazon: invest in product quality, not deeper discounts.</p>
     </div>
   </div>
 </div>
