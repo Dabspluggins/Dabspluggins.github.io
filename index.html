@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enyinnaya Daberechi | Data Analyst → Data Engineer</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:       #080d1a;
+      --bg2:      #0d1427;
+      --bg3:      #111d35;
+      --card:     #0f1a2e;
+      --border:   #1a2d50;
+      --cyan:     #00d4ff;
+      --blue:     #4f8ef7;
+      --purple:   #7c5cbf;
+      --green:    #00f5a0;
+      --text:     #e2e8f0;
+      --muted:    #7a8fad;
+      --font-mono: 'Courier New', Courier, monospace;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+    a { color: var(--cyan); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ── Grid bg ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5%;
+      height: 64px;
+      background: rgba(8,13,26,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 0.04em;
+    }
+    .nav-logo span { color: var(--muted); }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--cyan); text-decoration: none; }
+    .nav-hire {
+      background: transparent;
+      border: 1px solid var(--cyan);
+      color: var(--cyan) !important;
+      padding: 6px 18px;
+      border-radius: 6px;
+      transition: background 0.2s, color 0.2s !important;
+    }
+    .nav-hire:hover { background: var(--cyan) !important; color: var(--bg) !important; }
+    .nav-toggle { display: none; background: none; border: none; color: var(--cyan); font-size: 1.4rem; cursor: pointer; }
+
+    /* ── Hero ── */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 120px 10% 80px;
+    }
+    .hero-content { max-width: 680px; }
+    .hero-tag {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--cyan);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .hero-tag::before {
+      content: '';
+      display: inline-block; width: 28px; height: 1px;
+      background: var(--cyan);
+    }
+    .hero-name {
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 14px;
+      letter-spacing: -0.02em;
+    }
+    .hero-name .glow {
+      background: linear-gradient(90deg, var(--cyan), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-title {
+      font-size: 1.15rem;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+    .hero-title strong { color: var(--text); }
+    .hero-desc {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 540px;
+      margin-bottom: 38px;
+      line-height: 1.75;
+    }
+    .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      color: var(--bg);
+      font-weight: 700; font-size: 0.9rem;
+      padding: 12px 28px; border-radius: 8px;
+      border: none; cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+      box-shadow: 0 0 24px rgba(0,212,255,0.25);
+    }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); text-decoration: none; }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent;
+      color: var(--cyan);
+      font-weight: 700; font-size: 0.9rem;
+      padding: 12px 28px; border-radius: 8px;
+      border: 1px solid var(--cyan); cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-outline:hover { background: rgba(0,212,255,0.08); transform: translateY(-1px); text-decoration: none; }
+
+    .hero-status {
+      margin-top: 44px;
+      display: flex; align-items: center; gap: 8px;
+      font-family: var(--font-mono); font-size: 0.8rem;
+      color: var(--green);
+    }
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .hero-visual {
+      position: absolute; right: 8%; top: 50%;
+      transform: translateY(-50%);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .orbit-ring {
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      border: 1px dashed rgba(0,212,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      animation: spinRing 20s linear infinite;
+    }
+    @keyframes spinRing { to { transform: rotate(360deg); } }
+    .orbit-center {
+      width: 100px; height: 100px;
+      background: var(--card);
+      border: 1px solid var(--cyan);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem;
+      box-shadow: 0 0 30px rgba(0,212,255,0.3);
+      animation: spinRing 20s linear infinite reverse;
+    }
+    .orbit-icon {
+      position: absolute;
+      width: 36px; height: 36px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 700;
+      color: var(--cyan);
+      font-family: var(--font-mono);
+      animation: spinRing 20s linear infinite reverse;
+    }
+    .orbit-icon:nth-child(1) { top: -18px; left: 50%; transform: translateX(-50%); }
+    .orbit-icon:nth-child(2) { top: 50%; right: -18px; transform: translateY(-50%); }
+    .orbit-icon:nth-child(3) { bottom: -18px; left: 50%; transform: translateX(-50%); }
+    .orbit-icon:nth-child(4) { top: 50%; left: -18px; transform: translateY(-50%); }
+
+    /* ── Sections ── */
+    section { position: relative; z-index: 1; padding: 90px 10%; }
+    .section-tag {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--cyan);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      margin-bottom: 14px;
+      letter-spacing: -0.02em;
+    }
+    .section-divider {
+      width: 48px; height: 3px;
+      background: linear-gradient(90deg, var(--cyan), transparent);
+      margin-bottom: 48px;
+      border-radius: 2px;
+    }
+    .section-subtitle { color: var(--muted); max-width: 560px; margin-bottom: 48px; }
+
+    /* ── About ── */
+    #about { background: var(--bg2); }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 60px; align-items: center;
+    }
+    .about-text p { color: var(--muted); line-height: 1.8; margin-bottom: 16px; }
+    .about-text p strong { color: var(--text); }
+    .about-text p em { color: var(--cyan); font-style: normal; font-weight: 600; }
+    .about-stats {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+      text-align: center;
+      position: relative; overflow: hidden;
+      transition: border-color 0.3s, transform 0.2s;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--cyan), var(--blue));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .stat-card:hover { border-color: var(--cyan); transform: translateY(-2px); }
+    .stat-card:hover::before { opacity: 1; }
+    .stat-num {
+      font-size: 2rem; font-weight: 800;
+      background: linear-gradient(90deg, var(--cyan), var(--blue));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+    .stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 6px; }
+
+    /* ── Skills ── */
+    #skills { background: var(--bg); }
+    .skills-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    .skill-category {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px;
+      transition: border-color 0.3s, transform 0.2s;
+    }
+    .skill-category:hover { border-color: rgba(0,212,255,0.4); transform: translateY(-3px); }
+    .cat-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 20px;
+    }
+    .cat-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: rgba(0,212,255,0.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+    }
+    .cat-name { font-weight: 700; font-size: 0.95rem; }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .skill-tag {
+      background: rgba(0,212,255,0.07);
+      border: 1px solid rgba(0,212,255,0.2);
+      color: var(--cyan);
+      font-size: 0.78rem; font-weight: 600;
+      font-family: var(--font-mono);
+      padding: 5px 12px; border-radius: 20px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .skill-tag:hover { background: rgba(0,212,255,0.15); border-color: var(--cyan); }
+    .skill-tag.blue { color: var(--blue); border-color: rgba(79,142,247,0.3); background: rgba(79,142,247,0.07); }
+    .skill-tag.blue:hover { background: rgba(79,142,247,0.15); border-color: var(--blue); }
+    .skill-tag.purple { color: #a78bfa; border-color: rgba(167,139,250,0.3); background: rgba(167,139,250,0.07); }
+    .skill-tag.green { color: var(--green); border-color: rgba(0,245,160,0.3); background: rgba(0,245,160,0.07); }
+
+    /* ── Projects ── */
+    #projects { background: var(--bg2); }
+    .projects-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+    .project-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px;
+      display: flex; flex-direction: column;
+      transition: border-color 0.3s, transform 0.2s, box-shadow 0.3s;
+      position: relative; overflow: hidden;
+    }
+    .project-card::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .project-card:hover { border-color: rgba(0,212,255,0.4); transform: translateY(-4px); box-shadow: 0 8px 40px rgba(0,212,255,0.08); }
+    .project-card:hover::after { opacity: 1; }
+    .project-type {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--font-mono); font-size: 0.7rem;
+      font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--cyan); margin-bottom: 14px;
+    }
+    .type-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); }
+    .type-dot.de { background: var(--blue); }
+    .project-type.de { color: var(--blue); }
+    .project-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; line-height: 1.35; }
+    .project-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.75; flex: 1; margin-bottom: 20px; }
+    .project-stack { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+    .stack-tag {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      font-size: 0.72rem; font-weight: 600;
+      font-family: var(--font-mono);
+      padding: 3px 10px; border-radius: 4px;
+      color: var(--muted);
+    }
+    .project-links { display: flex; gap: 12px; }
+    .proj-link {
+      font-size: 0.8rem; font-weight: 600;
+      color: var(--cyan);
+      display: flex; align-items: center; gap: 5px;
+      padding: 6px 14px;
+      border: 1px solid rgba(0,212,255,0.3);
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+    .proj-link:hover { background: rgba(0,212,255,0.08); text-decoration: none; }
+    .placeholder-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-family: var(--font-mono); font-size: 0.68rem;
+      color: var(--muted); background: var(--bg3);
+      border: 1px dashed var(--border);
+      padding: 3px 10px; border-radius: 4px;
+    }
+    .view-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.8rem; font-weight: 600;
+      color: var(--cyan);
+      padding: 7px 16px;
+      border: 1px solid rgba(0,212,255,0.35);
+      border-radius: 6px;
+      cursor: pointer;
+      background: transparent;
+      font-family: inherit;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .view-btn:hover { background: rgba(0,212,255,0.08); border-color: var(--cyan); text-decoration: none; }
+    a.view-btn[href$=".xlsx"], a.view-btn[href$=".pbix"] {
+      color: var(--green);
+      border-color: rgba(0,245,160,0.35);
+      text-decoration: none;
+    }
+    a.view-btn[href$=".xlsx"]:hover, a.view-btn[href$=".pbix"]:hover {
+      background: rgba(0,245,160,0.08); border-color: var(--green); text-decoration: none;
+    }
+
+    /* ── Case Study Modal ── */
+    .cs-modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      background: rgba(4,8,20,0.88); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .cs-modal-overlay.open { display: flex; }
+    .cs-modal {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 100%; max-width: 720px;
+      max-height: 88vh; overflow-y: auto;
+      padding: 40px;
+      position: relative;
+      box-shadow: 0 20px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,212,255,0.08);
+      animation: modalIn 0.25s ease;
+    }
+    @keyframes modalIn {
+      from { opacity:0; transform:translateY(20px) scale(0.97); }
+      to   { opacity:1; transform:translateY(0) scale(1); }
+    }
+    .cs-modal-close {
+      position: absolute; top: 16px; right: 20px;
+      background: none; border: none; color: var(--muted);
+      font-size: 1.5rem; cursor: pointer; line-height: 1;
+      transition: color 0.2s;
+    }
+    .cs-modal-close:hover { color: var(--cyan); }
+    .cs-type-badge {
+      display: inline-block;
+      font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--cyan); background: rgba(0,212,255,0.08);
+      border: 1px solid rgba(0,212,255,0.2);
+      padding: 3px 10px; border-radius: 4px; margin-bottom: 14px;
+    }
+    .cs-type-badge.de { color: var(--blue); background: rgba(79,142,247,0.08); border-color: rgba(79,142,247,0.2); }
+    .cs-modal h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; line-height: 1.3; }
+    .cs-tools {
+      font-family: var(--font-mono); font-size: 0.75rem;
+      color: var(--green); margin-bottom: 24px;
+    }
+    .cs-section { margin-bottom: 20px; }
+    .cs-section h4 {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--cyan);
+      margin-bottom: 8px; font-family: var(--font-mono);
+    }
+    .cs-section.de h4 { color: var(--blue); }
+    .cs-section p, .cs-section li {
+      font-size: 0.9rem; color: var(--muted); line-height: 1.8;
+    }
+    .cs-section ul { padding-left: 18px; }
+    .cs-section ul li { margin-bottom: 4px; }
+    .cs-divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+    /* ── Certifications ── */
+    #certifications { background: var(--bg); }
+    .certs-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .cert-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+      display: flex; align-items: flex-start; gap: 16px;
+      transition: border-color 0.3s, transform 0.2s;
+    }
+    .cert-card:hover { border-color: rgba(0,212,255,0.4); transform: translateY(-2px); }
+    .cert-icon {
+      width: 44px; height: 44px; flex-shrink: 0;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+    }
+    .cert-icon.aws { background: rgba(255,153,0,0.1); }
+    .cert-icon.azure { background: rgba(0,120,215,0.1); }
+    .cert-icon.gcp { background: rgba(52,168,83,0.1); }
+    .cert-icon.da { background: rgba(0,212,255,0.1); }
+    .cert-info { flex: 1; }
+    .cert-name { font-weight: 700; font-size: 0.92rem; line-height: 1.3; margin-bottom: 4px; }
+    .cert-issuer { font-size: 0.78rem; color: var(--muted); }
+    .cert-date { font-size: 0.72rem; font-family: var(--font-mono); color: var(--cyan); margin-top: 6px; }
+    .cert-placeholder { opacity: 0.4; border-style: dashed; }
+
+    /* ── Contact ── */
+    #contact { background: var(--bg2); }
+    .contact-wrapper {
+      display: grid; grid-template-columns: 1fr 1.2fr;
+      gap: 60px; align-items: start;
+    }
+    .contact-info h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 14px; }
+    .contact-info p { color: var(--muted); font-size: 0.92rem; line-height: 1.75; margin-bottom: 28px; }
+    .contact-links { display: flex; flex-direction: column; gap: 14px; }
+    .contact-item {
+      display: flex; align-items: center; gap: 14px;
+      font-size: 0.88rem;
+    }
+    .contact-icon {
+      width: 40px; height: 40px; flex-shrink: 0;
+      background: rgba(0,212,255,0.08);
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+    }
+    .contact-label { font-size: 0.72rem; color: var(--muted); }
+    .contact-value { font-weight: 600; color: var(--cyan); }
+
+    /* Contact Form */
+    .contact-form {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 32px;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-size: 0.78rem; font-weight: 600; font-family: var(--font-mono);
+      color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 14px;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(0,212,255,0.1);
+    }
+    .form-group select option { background: var(--bg2); }
+    .form-group textarea { resize: vertical; min-height: 110px; }
+    .form-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      color: var(--bg); font-weight: 700; font-size: 0.95rem;
+      padding: 13px; border-radius: 8px; border: none;
+      cursor: pointer; transition: opacity 0.2s;
+      box-shadow: 0 0 20px rgba(0,212,255,0.2);
+    }
+    .form-submit:hover { opacity: 0.88; }
+    .form-note { font-size: 0.75rem; color: var(--muted); text-align: center; margin-top: 10px; }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 28px 10%;
+      font-family: var(--font-mono); font-size: 0.78rem;
+      color: var(--muted);
+    }
+    footer span { color: var(--cyan); }
+
+    /* ── Animations ── */
+    .fade-in {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Mobile ── */
+    @media (max-width: 900px) {
+      nav { padding: 0 5%; }
+      .nav-links { display: none; position: fixed; top: 64px; left: 0; right: 0;
+        background: var(--bg2); flex-direction: column; padding: 20px;
+        border-bottom: 1px solid var(--border); gap: 16px; }
+      .nav-links.open { display: flex; }
+      .nav-toggle { display: block; }
+      #hero { padding: 100px 6% 60px; }
+      .hero-visual { display: none; }
+      .about-grid { grid-template-columns: 1fr; gap: 36px; }
+      .contact-wrapper { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      section { padding: 70px 6%; }
+    }
+    @media (max-width: 560px) {
+      .hero-btns { flex-direction: column; }
+      .about-stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav>
+  <div class="nav-logo">EN<span>.</span>DAB <span style="color:var(--cyan)">_</span></div>
+  <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#certifications">Certs</a></li>
+    <li><a href="#contact" class="nav-hire">Hire Me</a></li>
+  </ul>
+</nav>
+
+<!-- ── Hero ── -->
+<section id="hero">
+  <div class="hero-content fade-in">
+    <div class="hero-tag">Available for opportunities</div>
+    <h1 class="hero-name">
+      Enyinnaya<br>
+      <span class="glow">Daberechi</span>
+    </h1>
+    <p class="hero-title">
+      <strong>Data Analyst</strong> transitioning to <strong>Data Engineer</strong>
+    </p>
+    <p class="hero-desc">
+      Bridging the gap between analytics and engineering — turning raw data into
+      reliable pipelines, actionable insights, and scalable infrastructure.
+      Passionate about building the data systems that power great decisions.
+    </p>
+    <div class="hero-btns">
+      <a href="#projects" class="btn-primary">View My Work ↓</a>
+      <a href="#contact" class="btn-outline">Get In Touch</a>
+    </div>
+    <div class="hero-status">
+      <div class="status-dot"></div>
+      Open to Data Engineering &amp; Analytics roles
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="orbit-ring">
+      <div class="orbit-icon" style="top:-18px;left:50%;transform:translateX(-50%) rotate(0deg)">SQL</div>
+      <div class="orbit-icon" style="top:50%;right:-18px;transform:translateY(-50%) rotate(0deg)">PY</div>
+      <div class="orbit-icon" style="bottom:-18px;left:50%;transform:translateX(-50%) rotate(0deg)">⚡</div>
+      <div class="orbit-icon" style="top:50%;left:-18px;transform:translateY(-50%) rotate(0deg)">☁️</div>
+      <div class="orbit-center">🔷</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── About ── -->
+<section id="about">
+  <div class="section-tag">// who_i_am</div>
+  <h2 class="section-title">About Me</h2>
+  <div class="section-divider"></div>
+  <div class="about-grid">
+    <div class="about-text fade-in">
+      <p>
+        I'm <strong>Enyinnaya Daberechi</strong>, a data professional with a strong foundation
+        in <em>data analysis</em> and a growing expertise in <em>data engineering</em>. I specialise
+        in extracting meaning from complex datasets and building the infrastructure that makes
+        that possible at scale.
+      </p>
+      <p>
+        My analytical background gives me a unique perspective as I move into engineering —
+        I don't just build pipelines, I build them with the <strong>end consumer of the data</strong>
+        in mind. I understand what analysts and business stakeholders need, which means
+        I engineer data systems that are intuitive, reliable, and actually useful.
+      </p>
+      <p>
+        I work across the modern data stack: from querying and reporting in <em>SQL, Power BI
+        and Tableau</em>, to orchestrating pipelines with <em>Airflow</em>, processing data at
+        scale with <em>Spark</em>, and managing ingestion with <em>Airbyte</em> on cloud platforms
+        like <em>AWS</em> and <em>Azure</em>.
+      </p>
+      <p>
+        I'm currently seeking roles where I can apply both skill sets — contributing to data
+        infrastructure while staying close to the insights side of the business.
+      </p>
+    </div>
+    <div class="about-stats fade-in">
+      <div class="stat-card">
+        <div class="stat-num">3+</div>
+        <div class="stat-label">Years in Data Analytics</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">10+</div>
+        <div class="stat-label">Tools &amp; Technologies</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">DA→DE</div>
+        <div class="stat-label">Active Transition</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">2</div>
+        <div class="stat-label">Cloud Platforms (AWS, Azure)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Skills ── -->
+<section id="skills">
+  <div class="section-tag">// tech_stack</div>
+  <h2 class="section-title">Skills &amp; Tools</h2>
+  <div class="section-divider"></div>
+  <p class="section-subtitle">A dual-stack skill set spanning analysis, visualisation, engineering, and cloud infrastructure.</p>
+  <div class="skills-grid">
+
+    <div class="skill-category fade-in">
+      <div class="cat-header">
+        <div class="cat-icon">🗄️</div>
+        <div class="cat-name">Data Analysis &amp; BI</div>
+      </div>
+      <div class="skill-tags">
+        <span class="skill-tag">SQL</span>
+        <span class="skill-tag">Excel</span>
+        <span class="skill-tag">Power BI</span>
+        <span class="skill-tag">Tableau</span>
+        <span class="skill-tag">SAP BW</span>
+        <span class="skill-tag">DAX</span>
+        <span class="skill-tag">Data Modelling</span>
+      </div>
+    </div>
+
+    <div class="skill-category fade-in">
+      <div class="cat-header">
+        <div class="cat-icon">⚙️</div>
+        <div class="cat-name">Data Engineering</div>
+      </div>
+      <div class="skill-tags">
+        <span class="skill-tag blue">Python</span>
+        <span class="skill-tag blue">Apache Spark</span>
+        <span class="skill-tag blue">Apache Airflow</span>
+        <span class="skill-tag blue">Airbyte</span>
+        <span class="skill-tag blue">ETL / ELT</span>
+        <span class="skill-tag blue">Pipeline Design</span>
+        <span class="skill-tag blue">dbt</span>
+      </div>
+    </div>
+
+    <div class="skill-category fade-in">
+      <div class="cat-header">
+        <div class="cat-icon">☁️</div>
+        <div class="cat-name">Cloud &amp; Infrastructure</div>
+      </div>
+      <div class="skill-tags">
+        <span class="skill-tag green">AWS</span>
+        <span class="skill-tag green">Azure</span>
+        <span class="skill-tag green">S3</span>
+        <span class="skill-tag green">Azure Data Factory</span>
+        <span class="skill-tag green">Cloud Storage</span>
+        <span class="skill-tag green">IAM</span>
+      </div>
+    </div>
+
+    <div class="skill-category fade-in">
+      <div class="cat-header">
+        <div class="cat-icon">🧠</div>
+        <div class="cat-name">Core Competencies</div>
+      </div>
+      <div class="skill-tags">
+        <span class="skill-tag purple">Data Quality</span>
+        <span class="skill-tag purple">Stakeholder Mgmt</span>
+        <span class="skill-tag purple">Dashboard Design</span>
+        <span class="skill-tag purple">Root Cause Analysis</span>
+        <span class="skill-tag purple">Agile / Scrum</span>
+        <span class="skill-tag purple">Documentation</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── Projects ── -->
+<section id="projects">
+  <div class="section-tag">// case_studies</div>
+  <h2 class="section-title">Projects &amp; Case Studies</h2>
+  <div class="section-divider"></div>
+  <p class="section-subtitle">A selection of analytical and engineering projects across industries. Upload your work and each card gets a full professional case study.</p>
+
+  <div class="projects-grid">
+
+    <!-- Project 1 - DA -->
+    <div class="project-card fade-in">
+      <div class="project-type"><span class="type-dot"></span>Data Analysis</div>
+      <h3 class="project-title" style="cursor:pointer" onclick="openModal('modal-1')">Mariana Mall Retail Sales Dashboard — End-to-End Analytics</h3>
+      <p class="project-desc">
+        End-to-end sales analytics project for a multi-retailer fashion mall covering 5 regional
+        retailers across Nigeria. Starting from raw, inconsistent data, the dataset was cleaned,
+        modelled across 6 pivot dimensions, and transformed into a fully interactive Excel dashboard.
+        Surfaced a 79.4% YOY revenue growth (₦5.18M → ₦9.30M), identified top-performing retailers,
+        peak trading days, and channel split across In-Store, Outlet, and Online — giving management
+        a single-pane-of-glass view to drive data-backed decisions on retail partnerships and product stocking.
+      </p>
+      <div class="project-stack">
+        <span class="stack-tag">Excel</span>
+        <span class="stack-tag">Power Query</span>
+        <span class="stack-tag">Pivot Tables</span>
+        <span class="stack-tag">KPI Analysis</span>
+        <span class="stack-tag">Data Cleaning</span>
+      </div>
+      <div class="project-links">
+        <span class="placeholder-badge">✅ Live Project</span>
+        <button class="view-btn" onclick="openModal('modal-1')">View Case Study →</button>
+        <a class="view-btn" href="Mariana_Mall_Sales_Dashboard.xlsx" target="_blank" title="Open Excel Dashboard">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          View Project
+        </a>
+      </div>
+    </div>
+
+    <!-- Project 2 - DE -->
+    <div class="project-card fade-in">
+      <div class="project-type de"><span class="type-dot de"></span>Data Engineering</div>
+      <h3 class="project-title">Retail Sales ETL Pipeline — Automated Data Engineering with Python &amp; Airflow</h3>
+      <p class="project-desc">
+        Designed and executed a production-style ETL pipeline that takes raw retail sales data
+        from a flat Excel file and engineers it into a structured, queryable SQLite database —
+        fully automated and orchestrated with Apache Airflow. The pipeline performs 8 transformation
+        steps including column standardisation, date validation, retailer deduplication, revenue
+        recalculation, and dataset enrichment. Loads 7 database tables: a sales fact table and
+        6 pre-built aggregation marts covering retailers, regions, products, sales channels, and
+        monthly trends. Airflow schedules the pipeline daily at 6:00 AM with retry logic and
+        failure alerting — transforming a one-time Excel analysis into a repeatable, auditable
+        data infrastructure and demonstrating the core DA→DE transition.
+      </p>
+      <div class="project-stack">
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">Pandas</span>
+        <span class="stack-tag">Apache Airflow</span>
+        <span class="stack-tag">SQLite</span>
+        <span class="stack-tag">ETL</span>
+      </div>
+      <div class="project-links">
+        <span class="placeholder-badge">✅ Live Project</span>
+        <button class="view-btn" onclick="openModal('modal-2')">View Case Study →</button>
+      </div>
+    </div>
+
+    <!-- Project 3 - DA -->
+    <div class="project-card fade-in">
+      <div class="project-type"><span class="type-dot"></span>Data Analysis</div>
+      <h3 class="project-title">Employee Attrition Analytics Dashboard — HR Intelligence in Power BI</h3>
+      <p class="project-desc">
+        Built a two-page interactive Power BI dashboard to help HR leadership understand employee
+        attrition patterns and root causes, with a focused lens on the 24–28 age group — which
+        recorded a 64.2% attrition rate, the highest of any cohort. Identified three critical
+        retention levers: salary disparities between junior and tenured staff, long commutes as
+        a consistent driver of early exits, and low job satisfaction linked to lack of tenure
+        recognition. Crafted targeted retention strategies around each lever, aimed at reducing
+        early exits and fostering a more positive, rewarding work culture.
+      </p>
+      <div class="project-stack">
+        <span class="stack-tag">Power BI</span>
+        <span class="stack-tag">DAX</span>
+        <span class="stack-tag">Data Modelling</span>
+        <span class="stack-tag">HR Analytics</span>
+      </div>
+      <div class="project-links">
+        <span class="placeholder-badge">✅ Live Project</span>
+        <button class="view-btn" onclick="openModal('modal-3')">View Case Study →</button>
+        <a class="view-btn" href="Employee_Attrition_Dashboard.pbix" target="_blank" title="Open Power BI Dashboard">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          View Project
+        </a>
+      </div>
+    </div>
+
+    <!-- Project 4 - DE -->
+    <div class="project-card fade-in">
+      <div class="project-type de"><span class="type-dot de"></span>Data Engineering</div>
+      <h3 class="project-title">Retail Sales Data Modelling — 3-Layer dbt Architecture with DuckDB</h3>
+      <p class="project-desc">
+        Built a production-style dbt data modelling project on top of the Mariana Mall retail
+        sales dataset, implementing a 3-layer architecture (Staging → Intermediate → Marts) that
+        transforms raw transactional data into clean, tested, and documented analytical tables.
+        Staging standardises and validates the source; Intermediate enriches with date dimensions
+        and business classifications (transaction tier, order size); Marts deliver two
+        consumption-ready tables — retailer performance (with revenue rank and channel breakdown)
+        and monthly KPIs with rolling YOY growth via SQL window functions. Data quality tests
+        enforce not_null, unique, and accepted_values constraints on every critical column,
+        running automatically on each dbt test execution.
+      </p>
+      <div class="project-stack">
+        <span class="stack-tag">dbt</span>
+        <span class="stack-tag">SQL</span>
+        <span class="stack-tag">DuckDB</span>
+        <span class="stack-tag">Data Modelling</span>
+        <span class="stack-tag">Data Quality</span>
+      </div>
+      <div class="project-links">
+        <span class="placeholder-badge">✅ Live Project</span>
+        <button class="view-btn" onclick="openModal('modal-4')">View Case Study →</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── Certifications ── -->
+<section id="certifications">
+  <div class="section-tag">// credentials</div>
+  <h2 class="section-title">Certifications</h2>
+  <div class="section-divider"></div>
+  <p class="section-subtitle">Professional certifications across cloud platforms and data disciplines.</p>
+  <div class="certs-grid">
+
+    <div class="cert-card fade-in cert-placeholder">
+      <div class="cert-icon aws">☁️</div>
+      <div class="cert-info">
+        <div class="cert-name">AWS Certified Data Engineer</div>
+        <div class="cert-issuer">Amazon Web Services</div>
+        <div class="cert-date">Add your certification date</div>
+      </div>
+    </div>
+
+    <div class="cert-card fade-in cert-placeholder">
+      <div class="cert-icon azure">🔷</div>
+      <div class="cert-info">
+        <div class="cert-name">Microsoft Azure Data Fundamentals</div>
+        <div class="cert-issuer">Microsoft</div>
+        <div class="cert-date">Add your certification date</div>
+      </div>
+    </div>
+
+    <div class="cert-card fade-in cert-placeholder">
+      <div class="cert-icon da">📊</div>
+      <div class="cert-info">
+        <div class="cert-name">Your Certification Here</div>
+        <div class="cert-issuer">Issuing Organisation</div>
+        <div class="cert-date">Issued: Month Year</div>
+      </div>
+    </div>
+
+    <div class="cert-card fade-in cert-placeholder">
+      <div class="cert-icon da">🎓</div>
+      <div class="cert-info">
+        <div class="cert-name">Your Certification Here</div>
+        <div class="cert-issuer">Issuing Organisation</div>
+        <div class="cert-date">Issued: Month Year</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── Contact ── -->
+<section id="contact">
+  <div class="section-tag">// get_in_touch</div>
+  <h2 class="section-title">Hire Me</h2>
+  <div class="section-divider"></div>
+  <div class="contact-wrapper">
+
+    <div class="contact-info fade-in">
+      <h3>Let's build something great with data.</h3>
+      <p>
+        Whether you're looking for a <strong>Data Analyst</strong> to surface insights from your data,
+        or a <strong>Data Engineer</strong> to build the infrastructure underneath it — I'm open to
+        full-time roles, contract work, and freelance projects.
+      </p>
+      <div class="contact-links">
+        <div class="contact-item">
+          <div class="contact-icon">✉️</div>
+          <div>
+            <div class="contact-label">Email</div>
+            <a class="contact-value" href="mailto:enyinnayadaberechi@gmail.com">enyinnayadaberechi@gmail.com</a>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">💼</div>
+          <div>
+            <div class="contact-label">LinkedIn</div>
+            <a class="contact-value" href="https://linkedin.com" target="_blank">Add your LinkedIn URL</a>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">🐙</div>
+          <div>
+            <div class="contact-label">GitHub</div>
+            <a class="contact-value" href="https://github.com" target="_blank">Add your GitHub URL</a>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">📍</div>
+          <div>
+            <div class="contact-label">Location</div>
+            <div class="contact-value">Open to remote &amp; relocation</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-form fade-in">
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" placeholder="Jane">
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" placeholder="Smith">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" placeholder="jane@company.com">
+      </div>
+      <div class="form-group">
+        <label>Organisation</label>
+        <input type="text" placeholder="Company / Freelance / Recruiter">
+      </div>
+      <div class="form-group">
+        <label>Opportunity Type</label>
+        <select>
+          <option value="" disabled selected>Select a type</option>
+          <option>Full-time Data Engineer</option>
+          <option>Full-time Data Analyst</option>
+          <option>Contract / Freelance Project</option>
+          <option>Collaboration</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <textarea placeholder="Tell me about the role or project you have in mind..."></textarea>
+      </div>
+      <button class="form-submit" onclick="handleSubmit(event)">Send Message →</button>
+      <p class="form-note">I typically respond within 24–48 hours.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── Case Study Modals ── -->
+
+<!-- Modal 1: Mariana Mall Sales Dashboard -->
+<div class="cs-modal-overlay" id="modal-1">
+  <div class="cs-modal">
+    <button class="cs-modal-close" onclick="closeModal('modal-1')">×</button>
+    <div class="cs-type-badge">Data Analysis</div>
+    <h2>Mariana Mall Retail Sales Dashboard — End-to-End Analytics</h2>
+    <div class="cs-tools">Tools: Microsoft Excel · Power Query · Pivot Tables · KPI Analysis</div>
+    <hr class="cs-divider">
+    <div class="cs-section">
+      <h4>Overview</h4>
+      <p>End-to-end sales analytics project for a multi-retailer fashion mall covering 5 regional retailers across Nigeria. Starting from raw, inconsistent data, the dataset was cleaned, modelled across 6 pivot dimensions, and transformed into a fully interactive Excel dashboard.</p>
+    </div>
+    <div class="cs-section">
+      <h4>The Problem</h4>
+      <p>The raw dataset contained inconsistent retailer naming (e.g. "Marina Stitches" vs "Mariana Stitches"), unformatted dates, mixed data types, and no structured reporting — making it impossible for management to track performance across 350+ transactions spanning 2022–2023.</p>
+    </div>
+    <div class="cs-section">
+      <h4>What Was Done</h4>
+      <ul>
+        <li>Cleaned and standardised the dataset across 11 columns: Retailer, Invoice Date, Region, State, City, Product, Price per Unit, Units Sold, Revenue, and Sales Method</li>
+        <li>Built pivot analyses across 6 dimensions: Revenue by Day of Week, by Retailer, by Sales Method, by Product &amp; Region, by Month, and by Year</li>
+        <li>Calculated KPIs: Total Revenue, Average Transaction Value, Total Units Sold, and Year-on-Year Growth Rate</li>
+        <li>Delivered a consolidated Marina Mall Dashboard as the final output</li>
+      </ul>
+    </div>
+    <div class="cs-section">
+      <h4>Key Findings</h4>
+      <ul>
+        <li>Total Revenue: ₦14.48M across 350 transactions</li>
+        <li>YOY Growth: 79.4% — revenue jumped from ₦5.18M (2022) to ₦9.30M (2023)</li>
+        <li>Top Retailer: Back2Shape Essentials at ₦3.16M</li>
+        <li>Best Sales Channel: In-Store (35.8%), ahead of Outlet (33.1%) and Online (31.1%)</li>
+        <li>Peak Day: Monday (₦2.74M); slowest day: Saturday (₦1.30M)</li>
+        <li>Products spanned 6 categories across 5 geopolitical regions</li>
+      </ul>
+    </div>
+    <div class="cs-section">
+      <h4>Outcome</h4>
+      <p>Management gained a single-pane-of-glass view of retail performance enabling data-driven decisions on retailer partnerships, channel investment, and product stocking by region.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 2: ETL Pipeline -->
+<div class="cs-modal-overlay" id="modal-2">
+  <div class="cs-modal">
+    <button class="cs-modal-close" onclick="closeModal('modal-2')">×</button>
+    <div class="cs-type-badge de">Data Engineering</div>
+    <h2>Retail Sales ETL Pipeline — Automated Data Engineering with Python &amp; Airflow</h2>
+    <div class="cs-tools">Tools: Python · Pandas · SQLite · Apache Airflow · openpyxl</div>
+    <hr class="cs-divider">
+    <div class="cs-section de">
+      <h4>Overview</h4>
+      <p>Designed and executed a production-style ETL pipeline that takes raw retail sales data from a flat Excel file and engineers it into a structured, queryable SQLite database — fully automated and orchestrated with Apache Airflow.</p>
+    </div>
+    <div class="cs-section de">
+      <h4>The Problem</h4>
+      <p>The Mariana Mall sales dataset existed only as a static Excel file — manually maintained, prone to inconsistencies, and not queryable at scale. Every analysis had to start from scratch with no automated refresh, validation, or downstream serving.</p>
+    </div>
+    <div class="cs-section de">
+      <h4>What Was Built</h4>
+      <ul>
+        <li><strong>Extract:</strong> Python reads the raw Excel source file and captures row count metadata via Airflow XCom</li>
+        <li><strong>Transform:</strong> 8 transformation steps — column standardisation, date parsing, retailer deduplication, numeric validation, revenue recalculation, and enrichment with year, month, day of week, and quarter columns</li>
+        <li><strong>Load:</strong> 7 tables written to SQLite — sales_fact, revenue_by_retailer, revenue_by_sales_method, revenue_by_region, revenue_by_product, monthly_trend, and kpi_summary</li>
+        <li><strong>Validate:</strong> Post-load assertions confirm row counts and revenue totals before marking the pipeline successful</li>
+        <li><strong>Orchestrate:</strong> Airflow DAG schedules daily runs at 6:00 AM with 2-retry logic and failure alerting</li>
+      </ul>
+    </div>
+    <div class="cs-section de">
+      <h4>Pipeline Output</h4>
+      <ul>
+        <li>350 rows loaded into sales_fact with full data lineage</li>
+        <li>6 aggregation tables serving downstream analytics</li>
+        <li>KPI confirmed: ₦14,477,336.13 total revenue | 79.38% YOY growth</li>
+        <li>Full execution log generated on every run</li>
+      </ul>
+    </div>
+    <div class="cs-section de">
+      <h4>Outcome</h4>
+      <p>Transformed a one-time manual Excel analysis into a repeatable, automated, and auditable data pipeline — demonstrating the core DA→DE transition: from consuming data to engineering the infrastructure that powers analysis.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 3: Attrition Dashboard -->
+<div class="cs-modal-overlay" id="modal-3">
+  <div class="cs-modal">
+    <button class="cs-modal-close" onclick="closeModal('modal-3')">×</button>
+    <div class="cs-type-badge">Data Analysis</div>
+    <h2>Employee Attrition Analytics Dashboard — HR Intelligence in Power BI</h2>
+    <div class="cs-tools">Tools: Power BI · DAX · Data Modelling · HR Analytics</div>
+    <hr class="cs-divider">
+    <div class="cs-section">
+      <h4>Overview</h4>
+      <p>Built a two-page interactive Power BI dashboard to help HR leadership understand employee attrition patterns and root causes, with a focused lens on the 24–28 age group — which recorded a 64.2% attrition rate, the highest of any cohort.</p>
+    </div>
+    <div class="cs-section">
+      <h4>The Problem</h4>
+      <p>HR teams were unable to pinpoint why employees were leaving or which departments and demographics were most affected. Without a structured analytical view, retention strategies were reactive and untargeted — particularly for younger employees early in their careers.</p>
+    </div>
+    <div class="cs-section">
+      <h4>What Was Built</h4>
+      <ul>
+        <li><strong>Page 1 — Demography Analysis:</strong> KPI cards (Total Employees, Attrition Rate, Average Age, Average Salary) with breakdowns by Department, Age Group, Years of Service, and Employment Type</li>
+        <li><strong>Page 2 — Root Cause Analysis:</strong> Satisfaction group distribution, scatter plots (Years of Service vs Salary, Age vs Salary), attrition by distance from workplace, and salary range breakdown by department</li>
+        <li><strong>DAX Measures:</strong> Total Employee, Total Employee Without Filter, Attrition Rate, Average Age, Average Salary</li>
+      </ul>
+    </div>
+    <div class="cs-section">
+      <h4>Key Findings</h4>
+      <ul>
+        <li>64.2% attrition rate among 24–28 year olds — the highest of any age group</li>
+        <li>Significant salary disparities identified within this cohort compared to longer-tenured peers</li>
+        <li>Long commutes emerged as a consistent driver of early exits, particularly for junior roles</li>
+        <li>Job satisfaction scores and lack of tenure recognition were strongly correlated with attrition</li>
+      </ul>
+    </div>
+    <div class="cs-section">
+      <h4>Outcome</h4>
+      <p>Analysis surfaced three critical retention levers — compensation equity, commute burden, and career recognition — for the 24–28 demographic. Targeted retention strategies were crafted around each lever, aimed at boosting satisfaction and fostering a more positive work culture.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 4: dbt Project -->
+<div class="cs-modal-overlay" id="modal-4">
+  <div class="cs-modal">
+    <button class="cs-modal-close" onclick="closeModal('modal-4')">×</button>
+    <div class="cs-type-badge de">Data Engineering</div>
+    <h2>Retail Sales Data Modelling — 3-Layer dbt Architecture with DuckDB</h2>
+    <div class="cs-tools">Tools: dbt · SQL · DuckDB · Data Modelling · Data Quality Testing</div>
+    <hr class="cs-divider">
+    <div class="cs-section de">
+      <h4>Overview</h4>
+      <p>Built a production-style dbt data modelling project implementing a 3-layer architecture (Staging → Intermediate → Marts) that transforms raw transactional data into clean, tested, and documented analytical tables ready for dashboard consumption.</p>
+    </div>
+    <div class="cs-section de">
+      <h4>The Problem</h4>
+      <p>Raw sales data, even after ETL cleaning, is not structured for efficient analytics. Analysts querying the fact table directly face repeated logic duplication, no data quality guarantees, and no reusable business definitions. A modelling layer was needed to centralise logic and serve purpose-built tables downstream.</p>
+    </div>
+    <div class="cs-section de">
+      <h4>What Was Built</h4>
+      <ul>
+        <li><strong>Layer 1 — Staging (stg_sales.sql):</strong> Standardises column names and types, fixes retailer name duplicates, recalculates revenue for accuracy, and filters invalid rows. Materialised as a view.</li>
+        <li><strong>Layer 2 — Intermediate (int_sales_enriched.sql):</strong> Enriches data with date dimensions (year, month, quarter, day of week) and business classifications — transaction tier (High/Mid/Standard) and order size category (Bulk/Standard/Small).</li>
+        <li><strong>Layer 3 — Marts (materialised as tables):</strong> mart_retailer_performance (revenue rank, channel breakdown, portfolio share %) and mart_sales_summary (monthly KPIs with rolling YOY growth via SQL window functions).</li>
+        <li><strong>Data Quality Tests:</strong> not_null, unique, and accepted_values constraints enforced on all critical columns via schema.yml files.</li>
+      </ul>
+    </div>
+    <div class="cs-section de">
+      <h4>Outcome</h4>
+      <p>Delivered a fully documented, tested, and layered data model that separates raw source logic from business logic — serving two consumption-ready mart tables that any BI tool can connect to directly without repeating transformation logic.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── Footer ── -->
+<footer>
+  <p>Built by <span>Enyinnaya Daberechi</span> · Data Analyst → <span>Data Engineer</span> · <span>© 2025</span></p>
+</footer>
+
+<script>
+  // Scroll-triggered fade-in
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Smooth active nav
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => { if(window.scrollY >= s.offsetTop - 90) current = s.id; });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--cyan)' : '';
+    });
+  });
+
+  // Mobile nav close on link click
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.addEventListener('click', () => document.querySelector('.nav-links').classList.remove('open'));
+  });
+
+  // Case Study Modal
+  function openModal(id) {
+    document.getElementById(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  // Close modal on overlay click
+  document.querySelectorAll('.cs-modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === this) closeModal(this.id);
+    });
+  });
+  // Close on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.cs-modal-overlay.open').forEach(m => closeModal(m.id));
+    }
+  });
+
+  // Form submit handler
+  function handleSubmit(e) {
+    e.preventDefault();
+    const btn = e.target;
+    btn.textContent = 'Message Sent ✓';
+    btn.style.background = 'var(--green)';
+    btn.style.color = 'var(--bg)';
+    setTimeout(() => {
+      btn.textContent = 'Send Message →';
+      btn.style.background = '';
+      btn.style.color = '';
+    }, 3000);
+  }
+</script>
+</body>
+</html>
