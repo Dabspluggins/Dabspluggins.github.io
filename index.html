@@ -739,11 +739,15 @@
       </div>
       <div class="skill-tags">
         <span class="skill-tag blue">Python</span>
+        <span class="skill-tag blue">Pandas</span>
+        <span class="skill-tag blue">FastAPI</span>
         <span class="skill-tag blue">Apache Spark</span>
         <span class="skill-tag blue">Apache Airflow</span>
+        <span class="skill-tag blue">Docker</span>
         <span class="skill-tag blue">Airbyte</span>
         <span class="skill-tag blue">ETL / ELT</span>
         <span class="skill-tag blue">Pipeline Design</span>
+        <span class="skill-tag blue">Data Lakes</span>
         <span class="skill-tag blue">dbt</span>
       </div>
     </div>
@@ -757,8 +761,12 @@
         <span class="skill-tag green">AWS</span>
         <span class="skill-tag green">Azure</span>
         <span class="skill-tag green">S3</span>
+        <span class="skill-tag green">Lambda</span>
+        <span class="skill-tag green">Glue</span>
+        <span class="skill-tag green">Athena</span>
+        <span class="skill-tag green">CloudWatch</span>
+        <span class="skill-tag green">SNS</span>
         <span class="skill-tag green">Azure Data Factory</span>
-        <span class="skill-tag green">Cloud Storage</span>
         <span class="skill-tag green">IAM</span>
       </div>
     </div>
@@ -957,6 +965,80 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           View Dashboard
         </a>
+      </div>
+    </div>
+
+    <!-- Project 7 - DE: AWS Data Lake -->
+    <div class="project-card fade-in">
+      <div class="project-type de"><span class="type-dot de"></span>Data Engineering</div>
+      <h3 class="project-title" style="cursor:pointer" onclick="openModal('modal-7')">AWS Serverless Data Lake Pipeline — S3 + Lambda + Glue + Athena</h3>
+      <p class="project-desc">
+        Built a fully serverless data lake on AWS (eu-north-1) using a medallion architecture:
+        raw CSV uploads to S3 trigger an SNS fan-out to a Lambda function that uppercases and
+        cleans the data, writes to the processed/ prefix, then auto-triggers an AWS Glue crawler.
+        Glue Data Catalog + Athena enable SQL querying of the processed lake. All IAM roles
+        follow least-privilege inline policies.
+      </p>
+      <div class="project-stack">
+        <span class="stack-tag">AWS Lambda</span>
+        <span class="stack-tag">S3</span>
+        <span class="stack-tag">Glue</span>
+        <span class="stack-tag">Athena</span>
+        <span class="stack-tag">SNS</span>
+        <span class="stack-tag">IAM</span>
+        <span class="stack-tag">CloudWatch</span>
+      </div>
+      <div class="project-links">
+        <span class="placeholder-badge">✅ Live Project</span>
+        <button class="view-btn" onclick="openModal('modal-7')">View Case Study →</button>
+      </div>
+    </div>
+
+    <!-- Project 8 - DE: CloudWatch Monitoring -->
+    <div class="project-card fade-in">
+      <div class="project-type de"><span class="type-dot de"></span>Data Engineering</div>
+      <h3 class="project-title" style="cursor:pointer" onclick="openModal('modal-8')">CloudWatch Monitoring &amp; Alerting — Data Lake Observability</h3>
+      <p class="project-desc">
+        Designed a CloudWatch observability layer for the AWS data lake pipeline: a 6-widget
+        dashboard tracking Lambda invocations, errors, duration, throttles, Glue crawler
+        elapsed time, and active alarms. Wired a CloudWatch Alarm (threshold ≥1 Lambda error
+        per 5-min window) to an SNS topic for real-time email alerts on pipeline failures.
+      </p>
+      <div class="project-stack">
+        <span class="stack-tag">CloudWatch</span>
+        <span class="stack-tag">CloudWatch Alarms</span>
+        <span class="stack-tag">SNS</span>
+        <span class="stack-tag">AWS Lambda</span>
+        <span class="stack-tag">Observability</span>
+      </div>
+      <div class="project-links">
+        <span class="placeholder-badge">✅ Live Project</span>
+        <button class="view-btn" onclick="openModal('modal-8')">View Case Study →</button>
+      </div>
+    </div>
+
+    <!-- Project 9 - DE: Nigerian Economic Indicators -->
+    <div class="project-card fade-in">
+      <div class="project-type de"><span class="type-dot de"></span>Data Engineering</div>
+      <h3 class="project-title" style="cursor:pointer" onclick="openModal('modal-9')">Nigerian Economic Indicators Pipeline — World Bank API to Live Dashboard</h3>
+      <p class="project-desc">
+        End-to-end data pipeline ingesting live World Bank Open Data API → Python + Pandas
+        transform → SQLite storage → FastAPI REST endpoints → dark-themed Chart.js dashboard.
+        Dockerized Airflow (LocalExecutor + PostgreSQL) schedules daily ingestion at 06:00 UTC.
+        Dashboard features 6 KPI cards, 6 charts, and a live "Refresh from API" button.
+      </p>
+      <div class="project-stack">
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">FastAPI</span>
+        <span class="stack-tag">Airflow</span>
+        <span class="stack-tag">Docker</span>
+        <span class="stack-tag">SQLite</span>
+        <span class="stack-tag">Chart.js</span>
+        <span class="stack-tag">REST API</span>
+      </div>
+      <div class="project-links">
+        <span class="placeholder-badge">✅ Live Project</span>
+        <button class="view-btn" onclick="openModal('modal-9')">View Case Study →</button>
       </div>
     </div>
 
@@ -1346,6 +1428,119 @@
     <div class="cs-section">
       <h4>Outcome</h4>
       <p>Delivered a publication-quality, fully dark-themed Excel dashboard generated 100% programmatically — proving that Python is a viable replacement for manual Excel dashboard design, and surfaces an actionable insight for any brand selling on Amazon: invest in product quality, not deeper discounts.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 7: AWS Data Lake Pipeline -->
+<div class="cs-modal-overlay" id="modal-7">
+  <div class="cs-modal">
+    <button class="cs-modal-close" onclick="closeModal('modal-7')">×</button>
+    <div class="cs-type-badge de">Data Engineering</div>
+    <h2>AWS Serverless Data Lake Pipeline — S3 + Lambda + Glue + Athena</h2>
+    <div class="cs-tools">Tools: AWS Lambda · S3 · Glue · Athena · SNS · IAM · CloudWatch · Python</div>
+    <hr class="cs-divider">
+    <div class="cs-section de">
+      <h4>Overview</h4>
+      <p>Built a fully serverless data lake on AWS (eu-north-1 / Stockholm) using a medallion architecture — raw CSV files land in S3, an event-driven pipeline transforms and promotes them to a processed layer, and Athena enables SQL querying directly on S3 via the Glue Data Catalog.</p>
+    </div>
+    <div class="cs-section de">
+      <h4>Architecture</h4>
+      <ul>
+        <li><strong>Storage (Bronze/Silver):</strong> S3 bucket with raw/ and processed/ prefixes implementing the medallion pattern — raw files are never mutated, processed files are the clean serving layer</li>
+        <li><strong>Event Fan-out:</strong> S3 PutObject events publish to an SNS topic which fans out to the Lambda function — decoupling the trigger from the processor and enabling future subscribers (e.g. notifications, additional transforms)</li>
+        <li><strong>Transform (Lambda):</strong> <code>raw-to-processed</code> function reads the incoming CSV, uppercases string fields, cleans whitespace, writes the clean output to the processed/ prefix</li>
+        <li><strong>Crawler Trigger:</strong> Lambda auto-triggers the AWS Glue crawler after each run, with a crawler state check and try/except guard — the pipeline never breaks on a concurrent crawler execution</li>
+        <li><strong>Catalogue &amp; Query:</strong> Glue Data Catalog maintains schema metadata; Athena provides serverless SQL querying directly against the processed S3 layer — no database server required</li>
+        <li><strong>Security:</strong> All Lambda and Glue roles use least-privilege IAM inline policies scoped to specific S3 prefixes, Glue actions, and CloudWatch log groups</li>
+      </ul>
+    </div>
+    <div class="cs-section de">
+      <h4>Key Engineering Decisions</h4>
+      <ul>
+        <li>SNS fan-out chosen over direct S3→Lambda trigger to decouple ingestion from processing and support multi-consumer patterns</li>
+        <li>Crawler state check prevents Lambda from failing when a previous crawl is still running — critical for high-frequency file drops</li>
+        <li>Medallion prefix separation (raw/ vs processed/) ensures raw data is always replayable and transforms are idempotent</li>
+      </ul>
+    </div>
+    <div class="cs-section de">
+      <h4>Outcome</h4>
+      <p>A fully serverless, event-driven data lake pipeline that automatically ingests, transforms, catalogues, and exposes data for SQL querying — with zero servers to manage, built entirely on AWS managed services with IAM least-privilege throughout.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 8: CloudWatch Monitoring -->
+<div class="cs-modal-overlay" id="modal-8">
+  <div class="cs-modal">
+    <button class="cs-modal-close" onclick="closeModal('modal-8')">×</button>
+    <div class="cs-type-badge de">Data Engineering</div>
+    <h2>CloudWatch Monitoring &amp; Alerting — Data Lake Observability</h2>
+    <div class="cs-tools">Tools: AWS CloudWatch · CloudWatch Alarms · SNS · Lambda · Glue</div>
+    <hr class="cs-divider">
+    <div class="cs-section de">
+      <h4>Overview</h4>
+      <p>Designed and deployed a full observability layer for the AWS data lake pipeline using CloudWatch — covering pipeline health, failure alerting, and real-time email notifications via SNS. A production pipeline without monitoring is incomplete; this layer makes failures visible before they become data outages.</p>
+    </div>
+    <div class="cs-section de">
+      <h4>Dashboard — DataLakePipeline</h4>
+      <ul>
+        <li><strong>Widget 1 — Lambda Invocations:</strong> Line chart tracking how often the transform function fires — confirms S3 events are flowing through SNS correctly</li>
+        <li><strong>Widget 2 — Lambda Errors:</strong> Line chart of function errors — the primary signal for transform failures</li>
+        <li><strong>Widget 3 — Lambda Duration:</strong> Average execution time per invocation — detects performance degradation as data volume grows</li>
+        <li><strong>Widget 4 — Lambda Throttles:</strong> Monitors concurrency limits being hit — important for high-frequency file ingestion patterns</li>
+        <li><strong>Widget 5 — Glue Crawler Elapsed Time:</strong> Tracks crawl duration — rising times indicate growing data volume or schema complexity</li>
+        <li><strong>Widget 6 — Active Alarms:</strong> Alarm state panel showing current pipeline health at a glance</li>
+      </ul>
+    </div>
+    <div class="cs-section de">
+      <h4>Alerting</h4>
+      <ul>
+        <li><strong>CloudWatch Alarm (DataLake-LambdaErrors):</strong> Triggers when Lambda error count ≥1 within any 5-minute evaluation window — catches single failures immediately</li>
+        <li><strong>SNS Topic (DataLake-Alerts):</strong> Alarm state change publishes to SNS, which delivers real-time email notifications — no manual log-checking required</li>
+      </ul>
+    </div>
+    <div class="cs-section de">
+      <h4>Outcome</h4>
+      <p>The pipeline moves from "deploy and hope" to fully observable — any Lambda error triggers an email alert within 5 minutes, and the dashboard gives a single-pane view of pipeline health, throughput, and performance trends over time.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 9: Nigerian Economic Indicators Pipeline -->
+<div class="cs-modal-overlay" id="modal-9">
+  <div class="cs-modal">
+    <button class="cs-modal-close" onclick="closeModal('modal-9')">×</button>
+    <div class="cs-type-badge de">Data Engineering</div>
+    <h2>Nigerian Economic Indicators Pipeline — World Bank API to Live Dashboard</h2>
+    <div class="cs-tools">Tools: Python · Pandas · FastAPI · Apache Airflow · Docker · SQLite · Chart.js · REST APIs</div>
+    <hr class="cs-divider">
+    <div class="cs-section de">
+      <h4>Overview</h4>
+      <p>End-to-end data engineering project ingesting live Nigerian macroeconomic data from the World Bank Open Data API, transforming and storing it in SQLite, serving it via a FastAPI REST layer, and visualising it in a dark-themed interactive HTML dashboard — fully orchestrated with Dockerized Airflow on a daily schedule.</p>
+    </div>
+    <div class="cs-section de">
+      <h4>Pipeline Architecture</h4>
+      <ul>
+        <li><strong>Ingest:</strong> Python requests World Bank Open Data API for key Nigerian indicators (GDP, inflation, unemployment, etc.) with per-indicator fallback handling — if one indicator fails, the rest still load</li>
+        <li><strong>Transform:</strong> Pandas cleans, normalises, and structures the API response into a consistent schema — handles missing years, null values, and unit standardisation</li>
+        <li><strong>Store:</strong> Transformed records written to SQLite — lightweight, portable, and queryable without a database server</li>
+        <li><strong>Orchestrate:</strong> Dockerized Airflow (LocalExecutor + PostgreSQL metadata DB) schedules the full ingest-transform-load pipeline daily at 06:00 UTC with retry logic</li>
+        <li><strong>Serve:</strong> FastAPI REST API exposes four endpoints: <code>/indicators</code> (all data), <code>/indicators/latest</code> (most recent year per indicator), <code>/indicators/{year}</code> (year filter), <code>/health</code> — with CORS middleware for browser access</li>
+        <li><strong>Visualise:</strong> Dark-themed HTML dashboard (Chart.js) with 6 KPI cards, 6 charts (line trends, bar comparisons), and a live "Refresh from API" button that re-fetches from FastAPI in-browser</li>
+      </ul>
+    </div>
+    <div class="cs-section de">
+      <h4>Key Engineering Decisions</h4>
+      <ul>
+        <li>Per-indicator fallback in ingestion ensures partial API failures don't void the entire pipeline run</li>
+        <li>FastAPI sits between the dashboard and SQLite — the frontend never queries the database directly, keeping the data layer decoupled from the presentation layer</li>
+        <li>Docker Compose bundles Airflow + PostgreSQL + the pipeline into a single <code>docker-compose up</code> — fully reproducible across environments</li>
+      </ul>
+    </div>
+    <div class="cs-section de">
+      <h4>Outcome</h4>
+      <p>A fully automated, containerised data product that ingests live macroeconomic data daily, serves it via REST, and presents it as an interactive dashboard — demonstrating the complete data engineering stack from API ingestion to user-facing visualisation.</p>
     </div>
   </div>
 </div>
