@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nigeria Economic Indicators Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e0e0e0; }
+  header {
+    background: linear-gradient(135deg, #008751 0%, #00632e 100%);
+    padding: 24px 40px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  }
+  header .flag { font-size: 2.6rem; }
+  header .title-block { flex: 1; min-width: 200px; }
+  header h1 { font-size: 1.6rem; font-weight: 700; color: #fff; }
+  header p  { font-size: 0.85rem; color: rgba(255,255,255,0.75); margin-top: 2px; }
+  .api-btn {
+    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.35);
+    color: #fff; padding: 8px 18px; border-radius: 8px; cursor: pointer;
+    font-size: 0.85rem; font-weight: 600; transition: background 0.2s;
+    display: flex; align-items: center; gap: 8px; white-space: nowrap;
+  }
+  .api-btn:hover { background: rgba(255,255,255,0.28); }
+  .api-btn.loading { opacity: 0.6; cursor: default; }
+  .api-status {
+    font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-top: 4px; text-align: right;
+  }
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px; padding: 28px 40px 10px;
+  }
+  .kpi {
+    background: #1a1d27; border-radius: 12px; padding: 20px;
+    border-left: 4px solid #008751;
+  }
+  .kpi .label { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: .05em; }
+  .kpi .value { font-size: 1.9rem; font-weight: 700; color: #fff; margin: 6px 0 4px; }
+  .kpi .sub   { font-size: 0.8rem; color: #aaa; }
+  .charts-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
+    gap: 20px; padding: 20px 40px 40px;
+  }
+  .card { background: #1a1d27; border-radius: 14px; padding: 24px; }
+  .card h3 { font-size: 1rem; color: #ccc; margin-bottom: 16px; font-weight: 600; }
+  canvas { max-height: 280px; }
+  footer {
+    text-align: center; padding: 20px; color: #555; font-size: 0.78rem;
+    border-top: 1px solid #222;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="flag">&#127475;&#127468;</span>
+  <div class="title-block">
+    <h1>Nigeria Economic Indicators Dashboard</h1>
+    <p>Source: World Bank Open Data &nbsp;&middot;&nbsp; 1990&#8211;2023</p>
+  </div>
+  <div style="text-align:right">
+    <button class="api-btn" id="refreshBtn" onclick="refreshFromAPI()">
+      &#8635; Refresh from API
+    </button>
+    <div class="api-status" id="apiStatus">Static data &mdash; click to fetch live</div>
+  </div>
+</header>
+
+<div class="kpi-grid" id="kpiGrid">
+  <div class="kpi">
+    <div class="label">GDP</div>
+    <div class="value" id="kpi-gdp">$363B</div>
+    <div class="sub">2023 &nbsp; <span style="color:red;font-size:0.85em">▼ 114.58</span></div>
+  </div>
+  <div class="kpi">
+    <div class="label">GDP per Capita</div>
+    <div class="value" id="kpi-pcap">$1,800</div>
+    <div class="sub">2023 &nbsp; <span style="color:red;font-size:0.85em">▼ 606.0</span></div>
+  </div>
+  <div class="kpi" style="border-left-color:#e74c3c">
+    <div class="label">Inflation</div>
+    <div class="value" id="kpi-inf">24.5%</div>
+    <div class="sub">2023 &nbsp; <span style="color:green;font-size:0.85em">▼ 5.7</span></div>
+  </div>
+  <div class="kpi" style="border-left-color:#f39c12">
+    <div class="label">USD / NGN</div>
+    <div class="value" id="kpi-fx">&#8358;770</div>
+    <div class="sub">2023 &nbsp; <span style="color:green;font-size:0.85em">▼ 349.0</span></div>
+  </div>
+  <div class="kpi" style="border-left-color:#9b59b6">
+    <div class="label">Unemployment</div>
+    <div class="value" id="kpi-unemp">4.8%</div>
+    <div class="sub">2023 &nbsp; <span style="color:red;font-size:0.85em">▲ 0.2</span></div>
+  </div>
+  <div class="kpi" style="border-left-color:#3498db">
+    <div class="label">Trade Balance</div>
+    <div class="value" id="kpi-trade">-1.5%</div>
+    <div class="sub">of GDP &nbsp; <span style="color:red;font-size:0.85em">▼ 2.8</span></div>
+  </div>
+</div>
+
+<div class="charts-grid">
+  <div class="card"><h3>GDP (Billions USD)</h3><canvas id="gdpChart"></canvas></div>
+  <div class="card"><h3>Inflation vs. Naira Depreciation (%)</h3><canvas id="inflationChart"></canvas></div>
+  <div class="card"><h3>Exchange Rate &mdash; NGN per USD</h3><canvas id="fxChart"></canvas></div>
+  <div class="card"><h3>Exports vs. Imports (% of GDP)</h3><canvas id="tradeChart"></canvas></div>
+  <div class="card"><h3>Current Account Balance (Billions USD)</h3><canvas id="caChart"></canvas></div>
+  <div class="card"><h3>GDP Per Capita (USD)</h3><canvas id="pcapChart"></canvas></div>
+</div>
+
+<footer>
+  Data: World Bank Open Data (api.worldbank.org) &middot; Country: Nigeria (NG) &middot;
+  Pipeline: Python &rarr; Pandas &rarr; SQLite &rarr; Airflow &middot; API: Cloudflare Pages (nigeria-economic-api.pages.dev)
+</footer>
+
+<script>
+// ── embedded static data ─────────────────────────────────────────────────────
+const STATIC_DATA = [{"year": 1990, "country": "Nigeria", "country_code": "NG", "gdp_usd": 28472200000.0, "gdp_per_capita_usd": 284.7, "inflation_pct": 7.5, "unemployment_pct": 3.5, "exchange_rate_ngn_usd": 8.038, "exports_pct_gdp": 43.5, "imports_pct_gdp": 28.2, "current_account_balance_usd": 4900000000.0, "gdp_billion_usd": 28.47, "gdp_per_capita_k_usd": 0.285, "gdp_growth_pct": null, "trade_balance_pct_gdp": 15.3, "ngn_depreciation_pct": null, "current_account_billion_usd": 4.9, "data_source": "World Bank API"}, {"year": 1991, "country": "Nigeria", "country_code": "NG", "gdp_usd": 27025400000.0, "gdp_per_capita_usd": 263.6, "inflation_pct": 13.0, "unemployment_pct": 3.6, "exchange_rate_ngn_usd": 9.909, "exports_pct_gdp": 43.8, "imports_pct_gdp": 29.0, "current_account_balance_usd": 2800000000.0, "gdp_billion_usd": 27.03, "gdp_per_capita_k_usd": 0.264, "gdp_growth_pct": -5.08, "trade_balance_pct_gdp": 14.8, "ngn_depreciation_pct": 23.28, "current_account_billion_usd": 2.8, "data_source": "World Bank API"}, {"year": 1992, "country": "Nigeria", "country_code": "NG", "gdp_usd": 32401400000.0, "gdp_per_capita_usd": 307.4, "inflation_pct": 44.6, "unemployment_pct": 3.7, "exchange_rate_ngn_usd": 17.298, "exports_pct_gdp": 43.2, "imports_pct_gdp": 29.1, "current_account_balance_usd": 900000000.0, "gdp_billion_usd": 32.4, "gdp_per_capita_k_usd": 0.307, "gdp_growth_pct": 19.89, "trade_balance_pct_gdp": 14.1, "ngn_depreciation_pct": 74.57, "current_account_billion_usd": 0.9, "data_source": "World Bank API"}, {"year": 1993, "country": "Nigeria", "country_code": "NG", "gdp_usd": 19927600000.0, "gdp_per_capita_usd": 184.0, "inflation_pct": 57.2, "unemployment_pct": 3.8, "exchange_rate_ngn_usd": 22.065, "exports_pct_gdp": 42.5, "imports_pct_gdp": 27.8, "current_account_balance_usd": -900000000.0, "gdp_billion_usd": 19.93, "gdp_per_capita_k_usd": 0.184, "gdp_growth_pct": -38.5, "trade_balance_pct_gdp": 14.7, "ngn_depreciation_pct": 27.56, "current_account_billion_usd": -0.9, "data_source": "World Bank API"}, {"year": 1994, "country": "Nigeria", "country_code": "NG", "gdp_usd": 18870500000.0, "gdp_per_capita_usd": 169.9, "inflation_pct": 57.0, "unemployment_pct": 3.9, "exchange_rate_ngn_usd": 21.996, "exports_pct_gdp": 42.2, "imports_pct_gdp": 25.5, "current_account_balance_usd": -900000000.0, "gdp_billion_usd": 18.87, "gdp_per_capita_k_usd": 0.17, "gdp_growth_pct": -5.3, "trade_balance_pct_gdp": 16.7, "ngn_depreciation_pct": -0.31, "current_account_billion_usd": -0.9, "data_source": "World Bank API"}, {"year": 1995, "country": "Nigeria", "country_code": "NG", "gdp_usd": 28032900000.0, "gdp_per_capita_usd": 246.8, "inflation_pct": 72.8, "unemployment_pct": 4.0, "exchange_rate_ngn_usd": 21.895, "exports_pct_gdp": 44.3, "imports_pct_gdp": 28.7, "current_account_balance_usd": -200000000.0, "gdp_billion_usd": 28.03, "gdp_per_capita_k_usd": 0.247, "gdp_growth_pct": 48.55, "trade_balance_pct_gdp": 15.6, "ngn_depreciation_pct": -0.46, "current_account_billion_usd": -0.2, "data_source": "World Bank API"}, {"year": 1996, "country": "Nigeria", "country_code": "NG", "gdp_usd": 34296500000.0, "gdp_per_capita_usd": 295.3, "inflation_pct": 29.3, "unemployment_pct": 4.0, "exchange_rate_ngn_usd": 21.884, "exports_pct_gdp": 46.4, "imports_pct_gdp": 28.9, "current_account_balance_usd": 3200000000.0, "gdp_billion_usd": 34.3, "gdp_per_capita_k_usd": 0.295, "gdp_growth_pct": 22.34, "trade_balance_pct_gdp": 17.5, "ngn_depreciation_pct": -0.05, "current_account_billion_usd": 3.2, "data_source": "World Bank API"}, {"year": 1997, "country": "Nigeria", "country_code": "NG", "gdp_usd": 36215800000.0, "gdp_per_capita_usd": 305.0, "inflation_pct": 8.5, "unemployment_pct": 4.0, "exchange_rate_ngn_usd": 21.886, "exports_pct_gdp": 46.0, "imports_pct_gdp": 30.0, "current_account_balance_usd": 1100000000.0, "gdp_billion_usd": 36.22, "gdp_per_capita_k_usd": 0.305, "gdp_growth_pct": 5.6, "trade_balance_pct_gdp": 16.0, "ngn_depreciation_pct": 0.01, "current_account_billion_usd": 1.1, "data_source": "World Bank API"}, {"year": 1998, "country": "Nigeria", "country_code": "NG", "gdp_usd": 32060500000.0, "gdp_per_capita_usd": 264.0, "inflation_pct": 10.0, "unemployment_pct": 4.0, "exchange_rate_ngn_usd": 21.886, "exports_pct_gdp": 36.5, "imports_pct_gdp": 30.3, "current_account_balance_usd": -3400000000.0, "gdp_billion_usd": 32.06, "gdp_per_capita_k_usd": 0.264, "gdp_growth_pct": -11.47, "trade_balance_pct_gdp": 6.2, "ngn_depreciation_pct": 0.0, "current_account_billion_usd": -3.4, "data_source": "World Bank API"}, {"year": 1999, "country": "Nigeria", "country_code": "NG", "gdp_usd": 36208500000.0, "gdp_per_capita_usd": 291.8, "inflation_pct": 6.6, "unemployment_pct": 4.1, "exchange_rate_ngn_usd": 92.338, "exports_pct_gdp": 42.3, "imports_pct_gdp": 31.7, "current_account_balance_usd": 900000000.0, "gdp_billion_usd": 36.21, "gdp_per_capita_k_usd": 0.292, "gdp_growth_pct": 12.94, "trade_balance_pct_gdp": 10.6, "ngn_depreciation_pct": 321.9, "current_account_billion_usd": 0.9, "data_source": "World Bank API"}, {"year": 2000, "country": "Nigeria", "country_code": "NG", "gdp_usd": 46386400000.0, "gdp_per_capita_usd": 365.3, "inflation_pct": 6.9, "unemployment_pct": 4.1, "exchange_rate_ngn_usd": 101.697, "exports_pct_gdp": 52.4, "imports_pct_gdp": 35.5, "current_account_balance_usd": 5600000000.0, "gdp_billion_usd": 46.39, "gdp_per_capita_k_usd": 0.365, "gdp_growth_pct": 28.11, "trade_balance_pct_gdp": 16.9, "ngn_depreciation_pct": 10.14, "current_account_billion_usd": 5.6, "data_source": "World Bank API"}, {"year": 2001, "country": "Nigeria", "country_code": "NG", "gdp_usd": 48649900000.0, "gdp_per_capita_usd": 374.8, "inflation_pct": 18.9, "unemployment_pct": 4.2, "exchange_rate_ngn_usd": 111.231, "exports_pct_gdp": 45.3, "imports_pct_gdp": 38.4, "current_account_balance_usd": 1400000000.0, "gdp_billion_usd": 48.65, "gdp_per_capita_k_usd": 0.375, "gdp_growth_pct": 4.88, "trade_balance_pct_gdp": 6.9, "ngn_depreciation_pct": 9.37, "current_account_billion_usd": 1.4, "data_source": "World Bank API"}, {"year": 2002, "country": "Nigeria", "country_code": "NG", "gdp_usd": 59117400000.0, "gdp_per_capita_usd": 446.0, "inflation_pct": 12.9, "unemployment_pct": 4.3, "exchange_rate_ngn_usd": 120.578, "exports_pct_gdp": 45.4, "imports_pct_gdp": 37.9, "current_account_balance_usd": -2100000000.0, "gdp_billion_usd": 59.12, "gdp_per_capita_k_usd": 0.446, "gdp_growth_pct": 21.52, "trade_balance_pct_gdp": 7.5, "ngn_depreciation_pct": 8.4, "current_account_billion_usd": -2.1, "data_source": "World Bank API"}, {"year": 2003, "country": "Nigeria", "country_code": "NG", "gdp_usd": 67656900000.0, "gdp_per_capita_usd": 500.0, "inflation_pct": 14.0, "unemployment_pct": 4.3, "exchange_rate_ngn_usd": 129.22, "exports_pct_gdp": 48.2, "imports_pct_gdp": 38.3, "current_account_balance_usd": 2600000000.0, "gdp_billion_usd": 67.66, "gdp_per_capita_k_usd": 0.5, "gdp_growth_pct": 14.44, "trade_balance_pct_gdp": 9.9, "ngn_depreciation_pct": 7.17, "current_account_billion_usd": 2.6, "data_source": "World Bank API"}, {"year": 2004, "country": "Nigeria", "country_code": "NG", "gdp_usd": 87847500000.0, "gdp_per_capita_usd": 637.0, "inflation_pct": 15.0, "unemployment_pct": 4.4, "exchange_rate_ngn_usd": 133.5, "exports_pct_gdp": 50.9, "imports_pct_gdp": 37.7, "current_account_balance_usd": 10200000000.0, "gdp_billion_usd": 87.85, "gdp_per_capita_k_usd": 0.637, "gdp_growth_pct": 29.84, "trade_balance_pct_gdp": 13.2, "ngn_depreciation_pct": 3.31, "current_account_billion_usd": 10.2, "data_source": "World Bank API"}, {"year": 2005, "country": "Nigeria", "country_code": "NG", "gdp_usd": 112248200000.0, "gdp_per_capita_usd": 800.0, "inflation_pct": 17.9, "unemployment_pct": 4.5, "exchange_rate_ngn_usd": 132.147, "exports_pct_gdp": 51.5, "imports_pct_gdp": 34.8, "current_account_balance_usd": 23200000000.0, "gdp_billion_usd": 112.25, "gdp_per_capita_k_usd": 0.8, "gdp_growth_pct": 27.78, "trade_balance_pct_gdp": 16.7, "ngn_depreciation_pct": -1.01, "current_account_billion_usd": 23.2, "data_source": "World Bank API"}, {"year": 2006, "country": "Nigeria", "country_code": "NG", "gdp_usd": 146003500000.0, "gdp_per_capita_usd": 1020.0, "inflation_pct": 8.2, "unemployment_pct": 4.5, "exchange_rate_ngn_usd": 128.652, "exports_pct_gdp": 40.6, "imports_pct_gdp": 29.4, "current_account_balance_usd": 28800000000.0, "gdp_billion_usd": 146.0, "gdp_per_capita_k_usd": 1.02, "gdp_growth_pct": 30.07, "trade_balance_pct_gdp": 11.2, "ngn_depreciation_pct": -2.64, "current_account_billion_usd": 28.8, "data_source": "World Bank API"}, {"year": 2007, "country": "Nigeria", "country_code": "NG", "gdp_usd": 166451300000.0, "gdp_per_capita_usd": 1144.0, "inflation_pct": 5.4, "unemployment_pct": 4.6, "exchange_rate_ngn_usd": 125.833, "exports_pct_gdp": 37.5, "imports_pct_gdp": 28.0, "current_account_balance_usd": 17600000000.0, "gdp_billion_usd": 166.45, "gdp_per_capita_k_usd": 1.144, "gdp_growth_pct": 14.01, "trade_balance_pct_gdp": 9.5, "ngn_depreciation_pct": -2.19, "current_account_billion_usd": 17.6, "data_source": "World Bank API"}, {"year": 2008, "country": "Nigeria", "country_code": "NG", "gdp_usd": 208064700000.0, "gdp_per_capita_usd": 1401.0, "inflation_pct": 11.6, "unemployment_pct": 4.8, "exchange_rate_ngn_usd": 118.567, "exports_pct_gdp": 38.6, "imports_pct_gdp": 30.8, "current_account_balance_usd": 26600000000.0, "gdp_billion_usd": 208.06, "gdp_per_capita_k_usd": 1.401, "gdp_growth_pct": 25.0, "trade_balance_pct_gdp": 7.8, "ngn_depreciation_pct": -5.77, "current_account_billion_usd": 26.6, "data_source": "World Bank API"}, {"year": 2009, "country": "Nigeria", "country_code": "NG", "gdp_usd": 168951000000.0, "gdp_per_capita_usd": 1118.0, "inflation_pct": 12.4, "unemployment_pct": 5.3, "exchange_rate_ngn_usd": 148.9, "exports_pct_gdp": 30.3, "imports_pct_gdp": 28.6, "current_account_balance_usd": 2700000000.0, "gdp_billion_usd": 168.95, "gdp_per_capita_k_usd": 1.118, "gdp_growth_pct": -18.8, "trade_balance_pct_gdp": 1.7, "ngn_depreciation_pct": 25.58, "current_account_billion_usd": 2.7, "data_source": "World Bank API"}, {"year": 2010, "country": "Nigeria", "country_code": "NG", "gdp_usd": 369062500000.0, "gdp_per_capita_usd": 2400.0, "inflation_pct": 13.7, "unemployment_pct": 5.1, "exchange_rate_ngn_usd": 150.298, "exports_pct_gdp": 30.8, "imports_pct_gdp": 19.0, "current_account_balance_usd": 13100000000.0, "gdp_billion_usd": 369.06, "gdp_per_capita_k_usd": 2.4, "gdp_growth_pct": 118.44, "trade_balance_pct_gdp": 11.8, "ngn_depreciation_pct": 0.94, "current_account_billion_usd": 13.1, "data_source": "World Bank API"}, {"year": 2011, "country": "Nigeria", "country_code": "NG", "gdp_usd": 411743100000.0, "gdp_per_capita_usd": 2617.0, "inflation_pct": 10.8, "unemployment_pct": 4.9, "exchange_rate_ngn_usd": 153.858, "exports_pct_gdp": 36.6, "imports_pct_gdp": 20.4, "current_account_balance_usd": 8600000000.0, "gdp_billion_usd": 411.74, "gdp_per_capita_k_usd": 2.617, "gdp_growth_pct": 11.56, "trade_balance_pct_gdp": 16.2, "ngn_depreciation_pct": 2.37, "current_account_billion_usd": 8.6, "data_source": "World Bank API"}, {"year": 2012, "country": "Nigeria", "country_code": "NG", "gdp_usd": 459615900000.0, "gdp_per_capita_usd": 2848.0, "inflation_pct": 12.2, "unemployment_pct": 4.9, "exchange_rate_ngn_usd": 156.809, "exports_pct_gdp": 35.7, "imports_pct_gdp": 18.3, "current_account_balance_usd": 18600000000.0, "gdp_billion_usd": 459.62, "gdp_per_capita_k_usd": 2.848, "gdp_growth_pct": 11.63, "trade_balance_pct_gdp": 17.4, "ngn_depreciation_pct": 1.92, "current_account_billion_usd": 18.6, "data_source": "World Bank API"}, {"year": 2013, "country": "Nigeria", "country_code": "NG", "gdp_usd": 514965300000.0, "gdp_per_capita_usd": 3119.0, "inflation_pct": 8.5, "unemployment_pct": 5.0, "exchange_rate_ngn_usd": 157.31, "exports_pct_gdp": 29.1, "imports_pct_gdp": 17.3, "current_account_balance_usd": 17800000000.0, "gdp_billion_usd": 514.97, "gdp_per_capita_k_usd": 3.119, "gdp_growth_pct": 12.04, "trade_balance_pct_gdp": 11.8, "ngn_depreciation_pct": 0.32, "current_account_billion_usd": 17.8, "data_source": "World Bank API"}, {"year": 2014, "country": "Nigeria", "country_code": "NG", "gdp_usd": 568499500000.0, "gdp_per_capita_usd": 3369.0, "inflation_pct": 8.1, "unemployment_pct": 5.1, "exchange_rate_ngn_usd": 158.553, "exports_pct_gdp": 23.0, "imports_pct_gdp": 14.3, "current_account_balance_usd": 1700000000.0, "gdp_billion_usd": 568.5, "gdp_per_capita_k_usd": 3.369, "gdp_growth_pct": 10.4, "trade_balance_pct_gdp": 8.7, "ngn_depreciation_pct": 0.79, "current_account_billion_usd": 1.7, "data_source": "World Bank API"}, {"year": 2015, "country": "Nigeria", "country_code": "NG", "gdp_usd": 481066000000.0, "gdp_per_capita_usd": 2788.0, "inflation_pct": 9.0, "unemployment_pct": 6.4, "exchange_rate_ngn_usd": 192.441, "exports_pct_gdp": 12.7, "imports_pct_gdp": 12.3, "current_account_balance_usd": -15400000000.0, "gdp_billion_usd": 481.07, "gdp_per_capita_k_usd": 2.788, "gdp_growth_pct": -15.38, "trade_balance_pct_gdp": 0.4, "ngn_depreciation_pct": 21.37, "current_account_billion_usd": -15.4, "data_source": "World Bank API"}, {"year": 2016, "country": "Nigeria", "country_code": "NG", "gdp_usd": 404649900000.0, "gdp_per_capita_usd": 2292.0, "inflation_pct": 15.7, "unemployment_pct": 7.6, "exchange_rate_ngn_usd": 253.492, "exports_pct_gdp": 9.3, "imports_pct_gdp": 12.5, "current_account_balance_usd": 2600000000.0, "gdp_billion_usd": 404.65, "gdp_per_capita_k_usd": 2.292, "gdp_growth_pct": -15.88, "trade_balance_pct_gdp": -3.2, "ngn_depreciation_pct": 31.72, "current_account_billion_usd": 2.6, "data_source": "World Bank API"}, {"year": 2017, "country": "Nigeria", "country_code": "NG", "gdp_usd": 375770700000.0, "gdp_per_capita_usd": 2083.0, "inflation_pct": 16.5, "unemployment_pct": 8.2, "exchange_rate_ngn_usd": 305.79, "exports_pct_gdp": 12.3, "imports_pct_gdp": 13.1, "current_account_balance_usd": 10400000000.0, "gdp_billion_usd": 375.77, "gdp_per_capita_k_usd": 2.083, "gdp_growth_pct": -7.14, "trade_balance_pct_gdp": -0.8, "ngn_depreciation_pct": 20.63, "current_account_billion_usd": 10.4, "data_source": "World Bank API"}, {"year": 2018, "country": "Nigeria", "country_code": "NG", "gdp_usd": 421802900000.0, "gdp_per_capita_usd": 2289.0, "inflation_pct": 12.1, "unemployment_pct": 8.5, "exchange_rate_ngn_usd": 306.084, "exports_pct_gdp": 15.1, "imports_pct_gdp": 16.8, "current_account_balance_usd": 4500000000.0, "gdp_billion_usd": 421.8, "gdp_per_capita_k_usd": 2.289, "gdp_growth_pct": 12.25, "trade_balance_pct_gdp": -1.7, "ngn_depreciation_pct": 0.1, "current_account_billion_usd": 4.5, "data_source": "World Bank API"}, {"year": 2019, "country": "Nigeria", "country_code": "NG", "gdp_usd": 448120400000.0, "gdp_per_capita_usd": 2387.0, "inflation_pct": 11.4, "unemployment_pct": 8.1, "exchange_rate_ngn_usd": 306.919, "exports_pct_gdp": 13.4, "imports_pct_gdp": 15.4, "current_account_balance_usd": -13400000000.0, "gdp_billion_usd": 448.12, "gdp_per_capita_k_usd": 2.387, "gdp_growth_pct": 6.24, "trade_balance_pct_gdp": -2.0, "ngn_depreciation_pct": 0.27, "current_account_billion_usd": -13.4, "data_source": "World Bank API"}, {"year": 2020, "country": "Nigeria", "country_code": "NG", "gdp_usd": 432294700000.0, "gdp_per_capita_usd": 2254.0, "inflation_pct": 13.2, "unemployment_pct": 9.7, "exchange_rate_ngn_usd": 358.811, "exports_pct_gdp": 9.0, "imports_pct_gdp": 14.4, "current_account_balance_usd": -15900000000.0, "gdp_billion_usd": 432.29, "gdp_per_capita_k_usd": 2.254, "gdp_growth_pct": -3.53, "trade_balance_pct_gdp": -5.4, "ngn_depreciation_pct": 16.91, "current_account_billion_usd": -15.9, "data_source": "World Bank API"}, {"year": 2021, "country": "Nigeria", "country_code": "NG", "gdp_usd": 440777900000.0, "gdp_per_capita_usd": 2258.0, "inflation_pct": 17.0, "unemployment_pct": 9.0, "exchange_rate_ngn_usd": 401.0, "exports_pct_gdp": 14.0, "imports_pct_gdp": 13.7, "current_account_balance_usd": -2400000000.0, "gdp_billion_usd": 440.78, "gdp_per_capita_k_usd": 2.258, "gdp_growth_pct": 1.96, "trade_balance_pct_gdp": 0.3, "ngn_depreciation_pct": 11.76, "current_account_billion_usd": -2.4, "data_source": "World Bank API"}, {"year": 2022, "country": "Nigeria", "country_code": "NG", "gdp_usd": 477386400000.0, "gdp_per_capita_usd": 2406.0, "inflation_pct": 18.8, "unemployment_pct": 5.0, "exchange_rate_ngn_usd": 421.0, "exports_pct_gdp": 16.3, "imports_pct_gdp": 15.0, "current_account_balance_usd": 100000000.0, "gdp_billion_usd": 477.39, "gdp_per_capita_k_usd": 2.406, "gdp_growth_pct": 8.31, "trade_balance_pct_gdp": 1.3, "ngn_depreciation_pct": 4.99, "current_account_billion_usd": 0.1, "data_source": "World Bank API"}, {"year": 2023, "country": "Nigeria", "country_code": "NG", "gdp_usd": 362814000000.0, "gdp_per_capita_usd": 1800.0, "inflation_pct": 24.5, "unemployment_pct": 4.8, "exchange_rate_ngn_usd": 770.0, "exports_pct_gdp": 13.0, "imports_pct_gdp": 14.5, "current_account_balance_usd": -4100000000.0, "gdp_billion_usd": 362.81, "gdp_per_capita_k_usd": 1.8, "gdp_growth_pct": -24.0, "trade_balance_pct_gdp": -1.5, "ngn_depreciation_pct": 82.9, "current_account_billion_usd": -4.1, "data_source": "World Bank API"}];
+
+// ── chart instances (kept for destroy/re-create on refresh) ──────────────────
+const chartMap = {};
+
+const green  = 'rgba(0,135,81,0.85)';
+const greenT = 'rgba(0,135,81,0.15)';
+const red    = 'rgba(231,76,60,0.85)';
+const redT   = 'rgba(231,76,60,0.15)';
+const blue   = 'rgba(52,152,219,0.85)';
+const amber  = 'rgba(243,156,18,0.85)';
+const gridOpts = { color: 'rgba(255,255,255,0.06)' };
+const tickOpts = { color: '#888' };
+
+function baseOpts(yLabel='') {
+  return {
+    responsive: true,
+    animation: { duration: 600 },
+    plugins: { legend: { labels: { color: '#ccc', boxWidth: 12 } } },
+    scales: {
+      x: { ticks: tickOpts, grid: gridOpts },
+      y: { ticks: tickOpts, grid: gridOpts,
+           title: { display: !!yLabel, text: yLabel, color:'#888' } }
+    }
+  };
+}
+
+function renderCharts(rows) {
+  const years = rows.map(r => r.year);
+
+  function mkChart(id, type, datasets, yLabel) {
+    if (chartMap[id]) chartMap[id].destroy();
+    chartMap[id] = new Chart(document.getElementById(id), {
+      type, data: { labels: years, datasets }, options: baseOpts(yLabel)
+    });
+  }
+
+  mkChart('gdpChart', 'bar', [{
+    label: 'GDP (B USD)',
+    data: rows.map(r => r.gdp_billion_usd),
+    backgroundColor: rows.map(r => r.year >= 2016 ? 'rgba(0,135,81,0.65)' : 'rgba(0,135,81,0.35)'),
+    borderColor: green, borderWidth: 1
+  }], 'B USD');
+
+  mkChart('inflationChart', 'line', [
+    { label: 'Inflation (%)',     data: rows.map(r => r.inflation_pct),
+       borderColor: red,   backgroundColor: redT,              tension: 0.3, fill: false, pointRadius: 2 },
+    { label: 'NGN Depreciation (%)', data: rows.map(r => r.ngn_depreciation_pct),
+       borderColor: amber, backgroundColor:'rgba(243,156,18,0.1)', tension: 0.3, fill: false, pointRadius: 2 }
+  ], '%');
+
+  mkChart('fxChart', 'line', [{
+    label: 'NGN / USD', data: rows.map(r => r.exchange_rate_ngn_usd),
+    borderColor: amber, backgroundColor:'rgba(243,156,18,0.1)', tension: 0.3, fill: true, pointRadius: 2
+  }], 'NGN per USD');
+
+  mkChart('tradeChart', 'line', [
+    { label: 'Exports % GDP', data: rows.map(r => r.exports_pct_gdp),
+       borderColor: green, tension: 0.3, fill: false, pointRadius: 2 },
+    { label: 'Imports % GDP', data: rows.map(r => r.imports_pct_gdp),
+       borderColor: red,   tension: 0.3, fill: false, pointRadius: 2 }
+  ], '% of GDP');
+
+  const caVals = rows.map(r => r.current_account_billion_usd);
+  mkChart('caChart', 'bar', [{
+    label: 'Current Account (B USD)', data: caVals,
+    backgroundColor: caVals.map(v => v >= 0 ? 'rgba(0,135,81,0.6)' : 'rgba(231,76,60,0.6)'),
+    borderColor: caVals.map(v => v >= 0 ? green : red), borderWidth: 1
+  }], 'B USD');
+
+  mkChart('pcapChart', 'line', [{
+    label: 'GDP per Capita (USD)', data: rows.map(r => r.gdp_per_capita_usd),
+    borderColor: blue, backgroundColor:'rgba(52,152,219,0.1)', tension: 0.3, fill: true, pointRadius: 2
+  }], 'USD');
+}
+
+// ── refresh from live API ─────────────────────────────────────────────────────
+async function refreshFromAPI() {
+  const btn = document.getElementById('refreshBtn');
+  const status = document.getElementById('apiStatus');
+  btn.classList.add('loading');
+  btn.textContent = '⟳ Fetching...';
+  status.textContent = 'Connecting to Cloudflare API...';
+  try {
+    const res = await fetch('https://nigeria-economic-api.pages.dev/indicators');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    const rows = json.data;
+    renderCharts(rows);
+    const latest = rows[rows.length - 1];
+    document.getElementById('kpi-gdp').textContent   = '$' + latest.gdp_billion_usd.toFixed(0) + 'B';
+    document.getElementById('kpi-pcap').textContent  = '$' + latest.gdp_per_capita_usd.toLocaleString();
+    document.getElementById('kpi-inf').textContent   = latest.inflation_pct.toFixed(1) + '%';
+    document.getElementById('kpi-fx').textContent    = '\u20A6' + latest.exchange_rate_ngn_usd.toLocaleString();
+    document.getElementById('kpi-unemp').textContent = latest.unemployment_pct.toFixed(1) + '%';
+    document.getElementById('kpi-trade').textContent = (latest.trade_balance_pct_gdp >= 0 ? '+' : '') + latest.trade_balance_pct_gdp.toFixed(1) + '%';
+    const ts = new Date().toLocaleTimeString();
+    status.textContent = 'Live data from API — last refreshed ' + ts;
+    status.style.color = 'rgba(0,255,120,0.8)';
+  } catch(e) {
+    status.textContent = 'API unreachable (' + e.message + ') — showing static data';
+    status.style.color = 'rgba(255,100,100,0.8)';
+  }
+  btn.classList.remove('loading');
+  btn.innerHTML = '&#8635; Refresh from API';
+}
+
+// ── initial render with embedded data ────────────────────────────────────────
+renderCharts(STATIC_DATA);
+</script>
+</body>
+</html>
